@@ -1,0 +1,13 @@
+<html>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jsmpeg/0.2/jsmpg.min.js"></script>
+
+<canvas></canvas>
+<script>
+  var client = new WebSocket('ws://localhost:4242');
+  var canvas = document.querySelector('canvas');
+  var player = new jsmpeg(client, {
+    canvas: canvas 
+  });
+</script>
+
+</html>
