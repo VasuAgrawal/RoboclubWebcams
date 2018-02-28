@@ -30,14 +30,44 @@ async def echo(websocket, path):
 
 async def stream():
     # this.stream = child_process.spawn("ffmpeg", ["-rtsp_transport", "tcp", "-i", this.url, '-f', 'mpeg1video', '-b:v', '800k', '-r', '30', '-'], {
-    command = ['ffmpeg', '-re',
-                # '-i', '../nosound.mkv',
-                '-i', '/dev/video0',
-                '-f', 'mpeg1video',
-                '-b:v', '1000k',
-                '-vf', 'scale=480:-1',
+
+    input_command = ['-i', '/dev/video0',
+            # '-pix_fmt', 'yuv420p'
+            ]
+    output1 = ['-f', 'mpeg1video',
+                '-b:v', '100k', 
+                '-vf', 'scale=480:-1', 
                 '-r', '24',
-                '-']
+                '-'
+    ]
+
+    # Segmented output for logging purposes. Log in 15 minute intervals.
+    output2 = ['-f', 'segment',
+                '-pix_fmt', 'yuv420p',
+                '-segment_format', 'mkv',
+                # '-segment_list', 'out_video.list', # Unnecessary?
+                '-segment_time', str(60 * 15),
+                '-segment_atclocktime', '1', # Split at even intervals
+                # This option doesn't seem to be available?
+                # '-segment_clocktime_offset', '5', # Based on camera count
+                # '-strftime', '1', '%Y-%m-%d_%H-%M-%S.mkv']
+                '-strftime', '1', 'out-%03d.mkv'
+    ]
+
+    ffmpeg_command = ['ffmpeg', 
+                        '-hide_banner', 
+                        '-loglevel', 'info',
+    ]
+
+    command = ffmpeg_command + input_command + output1 + output2
+    # command = ['ffmpeg', '-re',
+                # # '-i', '../nosound.mkv',
+                # '-i', '/dev/video0',
+                # '-f', 'mpeg1video',
+                # '-b:v', '1000k',
+                # '-vf', 'scale=480:-1',
+                # '-r', '24',
+                # '-']
 
     process = await asyncio.create_subprocess_exec(*command,
             stdout=asyncio.subprocess.PIPE)
@@ -56,11 +86,9 @@ async def stream():
         else:
             break
 
-        # TODO: Run this every 15 minutes or so in order to have small-ish 
-
 
 loop = asyncio.get_event_loop()
+loop.create_task(stream())
 loop.run_until_complete(
         websockets.serve(echo, 'localhost', 4242))
-loop.create_task(stream())
 loop.run_forever()
