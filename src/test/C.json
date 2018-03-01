@@ -1,0 +1,7 @@
+{
+    "_imports": [
+        "A.json",
+        "B.json"
+    ],
+    "B": 3
+}

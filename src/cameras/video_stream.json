@@ -1,0 +1,12 @@
+{
+    "_imports": [
+        "default.json"
+    ],
+    "name": "Video_Stream",
+    "input_command": [
+        "-re",
+        "-i", "../nosound.mkv"
+    ],
+    "hostname": "localhost",
+    "ws_port": 4242 
+}

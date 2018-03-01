@@ -1,0 +1,26 @@
+{
+    "ffmpeg_command": [
+        "ffmpeg",
+        "-hide_banner",
+        "-loglevel", "warning"
+    ],
+    "output_commands": [
+        [ 
+            "-f", "mpeg1video",
+            "-b:v", "100k",
+            # TODO: Make this part more scalable?
+            "-vf", "scale=480:-1",
+            "-r", "24",
+            "-"
+        ],
+        [
+            "-f", "segment",
+            "-pix_fmt", "yuv420p",
+            "-segment_format", "mkv",
+            "-segment_time", "900",
+            "-segment_atclocktime", "1",
+            "-strftime", "1", "%Y-%m-%d_%H-%M-%S.mkv"
+        ]
+    ],
+    "chunk_size": 4096
+}
