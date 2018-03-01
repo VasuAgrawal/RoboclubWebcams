@@ -1,6 +1,7 @@
 import asyncio
 import websockets
 import logging
+import sys
 
 from camera_stream import CameraStream
 
@@ -9,7 +10,7 @@ def main():
     loop = asyncio.get_event_loop()
 
     # Initialize all of the streams and their cameras
-    with open('cameras/cameras.manifest', 'r') as manifest:
+    with open(sys.argv[1], 'r') as manifest:
         cameras_configs = [line.strip() for line in manifest.readlines()]
         streams = map(CameraStream, cameras_configs)
 

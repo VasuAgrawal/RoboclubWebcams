@@ -1,0 +1,13 @@
+{
+    "_imports": [
+        "default.json"
+    ],
+
+    "name": "wall_camera_left",
+    "input_command": [
+        "-i", "rtsp://192.168.1.51/11"
+    ],
+
+    "hostname": "",
+    "ws_port": 4242 
+}

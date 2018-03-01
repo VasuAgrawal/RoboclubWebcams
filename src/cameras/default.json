@@ -8,7 +8,7 @@
     "output_commands": [
         [ 
             "-f", "mpeg1video",
-            "-b:v", "100k",
+            "-b:v", "1k",
             "-vf", "scale={% image_width %}:{% image_height %}",
             "-r", "24",
             "-"

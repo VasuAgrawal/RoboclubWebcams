@@ -43,8 +43,11 @@ class CameraStream(object):
         self.clients.add(websocket)
 
         # ... TODO: There has to be a better way of keeping the connection alive
-        async for message in websocket:
-            pass
+        try:
+            async for message in websocket:
+                pass
+        except websockets.exceptions.ConnectionClosed:
+            logging.info("Closed connection from client.")
 
 
     async def stream(self):
