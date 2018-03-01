@@ -1,3 +1,7 @@
+# Project ignore things
+logs
+test_data
+
 # Vim Swap files
 *.swp
 

@@ -3,5 +3,6 @@
         "A.json",
         "B.json"
     ],
-    "B": 3
+    "B": 3,
+    "pls_work": "{% A  %} (A) should be here"
 }

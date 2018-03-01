@@ -1,0 +1,112 @@
+<html>
+<head>
+<script
+src="https://cdnjs.cloudflare.com/ajax/libs/jsmpeg/0.1/jsmpg.js"></script>
+
+<script
+src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+<!-- Latest compiled and minified CSS -->
+<link rel="stylesheet"
+href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
+crossorigin="anonymous">
+
+<!-- Optional theme -->
+<link rel="stylesheet"
+href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css"
+integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp"
+crossorigin="anonymous">
+
+<!-- Latest compiled and minified JavaScript -->
+<script
+src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
+integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
+crossorigin="anonymous"></script>
+
+</head>
+<center>
+<h2> I really hope this continues to work. </h2>
+</center>
+<div class="container">
+    <div class="row">
+        <div class="col-md-6 text-center">
+<canvas id='c1'></canvas>
+        </div>
+        <div class="col-md-6 text-center">
+<canvas id='c2'></canvas>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6 text-center">
+<canvas id='c3'></canvas>
+        </div>
+        <div class="col-md-6 text-center">
+            <canvas id='c4'></canvas>
+        </div>
+    </div>
+
+
+    <script>
+        function RoboCam(id, port) {
+            this.id = id;
+            this.port = port;
+            this.client = new WebSocket(port);
+            this.canvas = document.getElementById(id);
+            this.player = new jsmpeg(this.client, {"canvas": this.canvas});
+
+            window.addEventListener("resize", (function() {
+                this.resizeCanvas();
+            }).bind(this));
+        }
+
+
+        RoboCam.prototype.resizeCanvas = function() {
+            width = this.canvas.parentElement.clientWidth - 30;
+            this.canvas.style.width = width;
+            this.canvas.style.height = "" + (9/16)*width + "px";
+            console.log("Reshaping " + this.id + "!");
+        }
+
+
+        var cameras = {'c1': 'ws://128.2.98.146:9999',
+                       'c2': 'ws://128.2.98.146:9998',
+                       'c3': 'ws://128.2.98.146:9997'};
+
+
+        for (var camera in cameras) {
+            var robocam = new RoboCam(camera, cameras[camera]);
+            robocam.resizeCanvas();
+        }
+
+    </script>
+
+<!--<script>-->
+    <!--var client = new WebSocket('ws://128.2.98.146:9999');-->
+    <!--var c = document.getElementById('c1');-->
+    <!--var player = new jsmpeg(client, {canvas: c});-->
+
+    <!--c.width = c.parentElement.clientWidth;-->
+    <!--c.height = c.parentElement.clientHeight;-->
+<!--</script>-->
+
+<!--<script>-->
+    <!--var client = new WebSocket('ws://128.2.98.146:9998');-->
+    <!--var c = document.getElementById('c2');-->
+    <!--var player = new jsmpeg(client, {canvas: c});-->
+    
+    <!--c.width = c.parentElement.clientWidth;-->
+    <!--c.height = c.parentElement.clientHeight;-->
+<!--</script>-->
+
+<!--<script>-->
+    <!--var client = new WebSocket('ws://128.2.98.146:9997');-->
+    <!--var c = document.getElementById('c3');-->
+    <!--var player = new jsmpeg(client, {canvas: c});-->
+    
+    <!--c.width = c.parentElement.clientWidth;-->
+    <!--c.height = c.parentElement.clientHeight;-->
+<!--</script>-->
+
+</body>
+</html>

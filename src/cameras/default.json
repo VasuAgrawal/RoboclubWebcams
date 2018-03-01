@@ -1,26 +1,29 @@
 {
     "ffmpeg_command": [
-        "ffmpeg",
-        "-hide_banner",
-        "-loglevel", "warning"
+        "ffmpeg"
+#        "-hide_banner",
+#        "-loglevel", "warning"
     ],
+    "log_dir": "../logs/{% name %}",
     "output_commands": [
         [ 
             "-f", "mpeg1video",
             "-b:v", "100k",
-            # TODO: Make this part more scalable?
-            "-vf", "scale=480:-1",
+            "-vf", "scale={% image_width %}:{% image_height %}",
             "-r", "24",
             "-"
         ],
         [
             "-f", "segment",
             "-pix_fmt", "yuv420p",
+            "-preset:v", "ultrafast",
             "-segment_format", "mkv",
             "-segment_time", "900",
             "-segment_atclocktime", "1",
-            "-strftime", "1", "%Y-%m-%d_%H-%M-%S.mkv"
+            "-strftime", "1", "{% log_dir %}/%Y-%m-%d_%H-%M-%S.mkv"
         ]
     ],
-    "chunk_size": 4096
+    "chunk_size": 4096,
+    "image_width": 1280,
+    "image_height": 720
 }

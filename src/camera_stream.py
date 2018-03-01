@@ -1,6 +1,8 @@
 import pprint
 import asyncio
 import websockets
+import logging
+import subprocess
 
 from json_config_parser import load_config
 
@@ -9,14 +11,20 @@ class CameraStream(object):
     def __init__(self, config_path):
         self.config = load_config(config_path)
         self.clients = set()
-        pprint.pprint(self.config)
+        logging.info("Loaded configuration: %s", pprint.pformat(self.config))
 
 
     async def init_camera(self):
+        # Make sure the logging directory exists
+        subprocess.run(['mkdir', '-p', self.config['log_dir']])
+        
+        # Construct the output command.
         command = self.config['ffmpeg_command']
         command += self.config['input_command']
         for output_command in self.config['output_commands']:
             command += output_command
+
+        logging.info("Executing command: %s", " ".join(command))
 
         self.camera_process = await asyncio.create_subprocess_exec(
                 *command,
@@ -26,8 +34,8 @@ class CameraStream(object):
 
     async def client_handler(self, websocket, path):
         magic = 'jsmp'.encode('ascii')
-        magic += (480).to_bytes(2, byteorder='big')
-        magic += (270).to_bytes(2, byteorder='big')
+        magic += (self.config['image_width']).to_bytes(2, byteorder='big')
+        magic += (self.config['image_height']).to_bytes(2, byteorder='big')
         await websocket.send(magic)
 
         # Only add the client to the set to serve after it's been initialized

@@ -2,10 +2,12 @@
     "_imports": [
         "default.json"
     ],
-    "name": "Laptop_Webcam",
+
+    "name": "laptop_webcam",
     "input_command": [
         "-i", "/dev/video0"
     ],
+
     "hostname": "localhost",
     "ws_port": 4242 
 }

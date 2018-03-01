@@ -1,14 +1,18 @@
 import asyncio
 import websockets
+import logging
 
 from camera_stream import CameraStream
 
 def main():
+    logging.basicConfig(level=logging.INFO)
     loop = asyncio.get_event_loop()
 
     # Initialize all of the streams and their cameras
-    # streams = map(CameraStream, ["cameras/laptop_webcam.json"])
-    streams = map(CameraStream, ["cameras/video_stream.json"])
+    with open('cameras/cameras.manifest', 'r') as manifest:
+        cameras_configs = [line.strip() for line in manifest.readlines()]
+        streams = map(CameraStream, cameras_configs)
+
     for stream in streams:
         loop.run_until_complete(stream.init_stream(loop))
 
