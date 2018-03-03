@@ -18,6 +18,7 @@ def main():
         loop.run_until_complete(stream.init_stream(loop))
 
     # And start serving finally.
+    loop.set_debug(True)
     loop.run_forever()
 
 
