@@ -3,7 +3,7 @@
 
 <canvas id="cs1"></canvas>
 <script>
-  var client = new WebSocket('ws://localhost:4242');
+  var client = new WebSocket('ws://roboclubx.roboclub.org:9999');
   var canvas = document.getElementById('cs1');
   var player = new jsmpeg(client, {
     canvas: canvas 
@@ -12,7 +12,7 @@
 
 <canvas id="cs2"></canvas>
 <script>
-  var client = new WebSocket('ws://localhost:4243');
+  var client = new WebSocket('ws://roboclubx.roboclub.org:4243');
   var canvas = document.getElementById('cs2');
   var player = new jsmpeg(client, {
     canvas: canvas 

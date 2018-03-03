@@ -5,7 +5,17 @@ import re
 import pdb
 import pprint
 
+def catchall(f):
+    def g(*args, **kwargs):
+        try:
+            return f(*args, **kwargs)
+        except Exception as e:
+            print("Error in calling function", f.__name__,
+                    "with arguments", args, kwargs, e)
+    return g
 
+
+@catchall
 def _raw_load(filename):
     with open(filename, 'r') as f:
         lines = ""

@@ -1,22 +1,24 @@
 {
     "ffmpeg_command": [
-        "ffmpeg"
-#        "-hide_banner",
-#        "-loglevel", "warning"
+        "ffmpeg",
+        "-hide_banner",
+        "-loglevel", "warning"
     ],
-    "log_dir": "../logs/{% name %}",
+    "log_dir": "/media/backup_disk1/camera_logs/{% name %}",
     "output_commands": [
-        [ 
+        [
             "-f", "mpeg1video",
-            "-b:v", "1k",
-            "-vf", "scale={% image_width %}:{% image_height %}",
+            "-an",
+            "-b:v", "100k",
             "-r", "24",
+            "-vf", "scale={% image_width %}:{% image_height %}",
             "-"
         ],
         [
             "-f", "segment",
+            "-an",
             "-pix_fmt", "yuv420p",
-            "-preset:v", "ultrafast",
+#            "-preset:v", "ultrafast",
             "-segment_format", "mkv",
             "-segment_time", "900",
             "-segment_atclocktime", "1",
