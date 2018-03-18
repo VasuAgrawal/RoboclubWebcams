@@ -4,6 +4,7 @@ import copy
 import logging
 import pprint
 import subprocess
+import sys
 import time
 import websockets
 
@@ -14,8 +15,7 @@ class CameraStream(object):
     def __init__(self, config_path):
         self.config = load_config(config_path)
         self.logger = logging.getLogger(self.config['name'])
-        coloredlogs.install(logger=self.logger)
-        # logging.info("Loaded configuration: %s", pprint.pformat(self.config))
+
         self.logger.info("Loaded configuration: %s", self.config)
         self.clients = set()
 
@@ -47,8 +47,8 @@ class CameraStream(object):
         # TODO: See if it's possible for this to throw an error?
         self.camera_process = await asyncio.create_subprocess_exec(
                 *command,
-                stdout=asyncio.subprocess.PIPE)
-                # stderr=asyncio.subprocess.PIPE)
+                stdout=asyncio.subprocess.PIPE,
+                stderr=asyncio.subprocess.PIPE)
                 # TODO: Read from stderr and check for encoding warnings
 
 

@@ -1,0 +1,20 @@
+version: 1
+disable_existing_loggers: False
+formatters:
+    simple:
+        format: "%(asctime)s [%(name)-20.20s](%(process)-5.5d) [%(levelname)-9.9s] %(message)s"
+handlers:
+    console:
+        class: logging.StreamHandler
+        level: INFO
+        formatter: simple
+    disk:
+        class: logging.handlers.RotatingFileHandler
+        level: INFO
+        formatter: simple
+        filename: logs/main.log
+        maxBytes: 1000000
+        backupCount: 10
+root:
+    level: DEBUG
+    handlers: [disk, console]

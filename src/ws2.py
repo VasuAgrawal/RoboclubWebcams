@@ -1,8 +1,14 @@
 import asyncio
 import argparse
 import logging
+import logging.handlers
+import logging.config
 import multiprocessing
+import os
+import subprocess
 import sys
+import time
+import yaml
 
 from camera_stream import CameraStream
 
@@ -33,6 +39,7 @@ def parse_camera_files(files):
     """
     # TODO: Can this be tied directly into the parser?
     names = list(map(lambda x: x.name, files))
+    logger = logging.getLogger(__name__)
     unique_streams = set()
 
     for name in names:
@@ -42,11 +49,12 @@ def parse_camera_files(files):
         elif name.endswith('.json'):
             unique_streams.add(name)
         else:
-            logging.warning('Received file %s with invalid extension', f)
+            logger.warning('Received file %s with invalid extension', f)
     
     return list(unique_streams)
 
 
+# This is the function which runs in the new process
 def stream_cameras(configs):
     loop = asyncio.get_event_loop()
 
@@ -59,10 +67,12 @@ def stream_cameras(configs):
     loop.run_forever()
 
 
+# Function which runs in the main process to start everything
 def start_camera_streams(streams, num_processes):
     """Start the specified number of streams across the processes."""
+    logger = logging.getLogger(__name__)
     num_processes = min(max(num_processes, 1), len(streams))
-    logging.info("Starting %d streams amongst %d processes!", 
+    logger.info("Starting %d streams amongst %d processes!", 
             len(streams), num_processes)
 
     assignments = [[] for i in range(num_processes)]
@@ -74,15 +84,27 @@ def start_camera_streams(streams, num_processes):
     for process in processes:
         process.start()
 
+    # Wait for all of the processes to do their work, indefinitely.
     for process in processes:
         process.join()
 
 
 def main():
-    print(args)
-    logging.basicConfig(level=logging.INFO)
+    # Load logging configuration from disk and use that.
+    # Hack the logging to use a time-based filename.
+    log_config = yaml.load(open('logging.yaml').read())
+    log_dir = "logs"
+    log_name = time.strftime("%Y-%m-%d_%H-%M-%S.log", time.gmtime())
+    subprocess.run(['mkdir', '-p', log_dir]) # Make sure it exists
+    log_path = os.path.join(log_dir, log_name)
+    log_config['handlers']['disk']['filename'] = log_path
+    logging.config.dictConfig(log_config)
+
+    logger = logging.getLogger(__name__)
+
+    # Figure out what streams to run, run those.
     streams = parse_camera_files(args.files)
-    print(streams)
+    logger.info(streams)
 
     start_camera_streams(streams, args.p)
     return

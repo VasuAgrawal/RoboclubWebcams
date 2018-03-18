@@ -1,5 +1,6 @@
 <html>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jsmpeg/0.2/jsmpg.min.js"></script>
+<!--<script src="https://cdnjs.cloudflare.com/ajax/libs/jsmpeg/0.2/jsmpg.min.js"></script>-->
+<script src="jsmpg.min.js"></script>
 
 <canvas id="cs1"></canvas>
 <script>
@@ -20,5 +21,17 @@
     canvas: canvas 
   });
 </script>
+
+<canvas id="cs3"></canvas>
+<script>
+//  var client = new WebSocket('ws://roboclubx.roboclub.org:4243');
+  var client = new WebSocket('ws://localhost:4244');
+  var canvas = document.getElementById('cs3');
+  var player = new jsmpeg(client, {
+    canvas: canvas 
+  });
+</script>
+
+
 
 </html>
