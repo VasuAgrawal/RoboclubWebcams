@@ -1,5 +1,4 @@
 import asyncio
-import coloredlogs
 import copy
 import logging
 import pprint
@@ -158,7 +157,7 @@ class CameraStream(object):
                     await self.reinit_stream()
 
 
-    # This will initializ the camera and server.
+    # This will initialize the camera and server.
     async def init_stream(self, loop):
         await self.init_camera() # Initialize the camera once to begin with.
         await websockets.serve(

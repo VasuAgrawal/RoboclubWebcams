@@ -6,13 +6,14 @@ formatters:
 handlers:
     console:
         class: logging.StreamHandler
-        level: INFO
+        level: DEBUG
         formatter: simple
     disk:
         class: logging.handlers.RotatingFileHandler
         level: INFO
         formatter: simple
-        filename: logs/main.log
+        # The filename is going to be set programmatically
+        # filename: logs/main.log
         maxBytes: 1000000
         backupCount: 10
 root:

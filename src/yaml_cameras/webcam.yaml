@@ -1,0 +1,12 @@
+name: laptop_webcam
+input:
+    class: WebcamInput
+    port: /dev/video0
+outputs: 
+    full_stream:
+        class: StreamOutput
+        hostname: ""
+        ws_port: 4242
+        image_width: 720
+        image_height: 1280
+        chunk_size: 4096
