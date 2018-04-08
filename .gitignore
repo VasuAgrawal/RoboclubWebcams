@@ -1,6 +1,7 @@
 # Project ignore things
 logs
 test_data
+server_logs
 
 # Vim Swap files
 *.swp
