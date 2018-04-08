@@ -110,6 +110,10 @@ def run_camera_process(assignment, process_number):
         loop.run_until_complete(camera_server.create_ffmpeg_process())
         loop.run_until_complete(camera_server.init_stream_servers())
 
+        # Error handling functions, to read / log stdout/stderr
+        loop.create_task(camera_server.handle_ffmpeg_stdout())
+        loop.create_task(camera_server.handle_ffmpeg_stderr())
+
     loop.set_debug(True) # Enable better debugging output.
     loop.run_forever() # Spin forever serving things.
 

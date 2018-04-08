@@ -44,9 +44,33 @@ class CameraServer(object):
         
         # TODO: Read outputs and check for errors
         self.camera_process = await asyncio.create_subprocess_exec(
-                *command,)
-                #  stdout=asyncio.subprocess.PIPE,
-                #  stderr=asyncio.subprocess.PIPE)
+                *command,
+                stdout=asyncio.subprocess.PIPE,
+                stderr=asyncio.subprocess.PIPE,
+                )
+
+
+    async def handle_ffmpeg_stdout(self):
+        """Spit STDOUT into logs, annotated.
+        """
+
+        print(type(self.camera_process.stdout))
+        while True:
+            line = await self.camera_process.stdout.readline()
+            self.logger.info("STDOUT: %s", line.strip())
+
+
+    async def handle_ffmpeg_stderr(self):
+        """Spit STDERR into logs, annotated.
+
+        In the future, this will also parse the errors and take appropriate
+        measures when things break.
+        """
+
+        print(type(self.camera_process.stdout))
+        while True:
+            line = await self.camera_process.stderr.readline()
+            self.logger.info("STDERR: %s", line.strip())
 
 
     async def init_stream_servers(self):

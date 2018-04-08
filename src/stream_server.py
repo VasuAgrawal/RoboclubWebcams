@@ -1,5 +1,6 @@
 import asyncio
 import logging
+import os
 import websockets
 
 class StreamServer(object):
@@ -19,12 +20,23 @@ class StreamServer(object):
         This will initialize the websocket server to start serving the stream on
         the specified port. This will also queue up the task to read from the
         pipe, which requires a call to loop.run_forever()."""
+       
+        # First line in any asyncio function ...
+        loop = asyncio.get_event_loop()
 
         # Initialize thing to read from the pipe.
         self.logger.info("Opening output pipe %s",
                 self.output_config.get_output_path())
-        output_fd = open(self.output_config.get_output_path(), 'rb')
+        output_fd = os.open(self.output_config.get_output_path(), 
+                os.O_RDONLY, os.O_NONBLOCK)
         self.logger.debug("Output FD: %d", output_fd)
+
+        reader = asyncio.StreamReader()
+        read_protocol = asyncio.StreamReaderProtocol(reader)
+        read_transport, _ = await loop.connect_read_pipe(
+                lambda: read_protocol, os.fdopen(output_fd))
+        self.reader = reader
+        self.logger.info("Initialized StreamReader.")
 
         # Initialize the websocket server.
         self.logger.info("Starting websocket server on %s:%d.",
@@ -38,8 +50,7 @@ class StreamServer(object):
         )
 
         self.logger.debug("Scheduling broadcaster!")
-        loop = asyncio.get_event_loop()
-        #  loop.create_task(self.broadcast())
+        loop.create_task(self.broadcast())
 
 
     async def client_handler(self, client, path):
@@ -54,10 +65,11 @@ class StreamServer(object):
             path: Request URI.
         """
         self.clients.add(client)
-        self.logger.debug("Received new connection request from %s, %s",
-                client, path)
+        self.logger.info("Received new connection request from %s (%s, %s), %s",
+                client, client.local_address, client.remote_address, path)
 
         # Send the magic bytes to configure JSMPEG
+        self.logger.info("Sending magic bytes to client.")
         await self.send_magic_bytes(client)
 
         while True:
@@ -65,7 +77,7 @@ class StreamServer(object):
             if not client.open:
                 try:
                     self.clients.remove(client)
-                    self.logger.debug("Removed client %s, %s from clients",
+                    self.logger.info("Removed client %s, %s from clients",
                             client, path)
                 except KeyError as e:
                     # It's been removed elsewhere, that's fine.
@@ -100,6 +112,35 @@ class StreamServer(object):
             self.logger.warning("Unable to initialize JSMPEG. Removing client.")
             self.logger.exception(e)
             self.clients.remove(client)
+
+
+    #  async def broadcast(self):
+    #      """Broadcast to the clients.
+    #      """
+    #  
+    #      while True:
+    #          try:
+    #              chunk
+    #  
+    async def broadcast(self):
+
+        while True:
+            try:
+                chunk = await self.reader.read(4096)
+            except Exception as e:
+                self.logger.exception(e)
+                continue
+
+            if chunk:
+                clients = self.clients.copy()
+                self.logger.debug("Sending chunk to %d clients.", len(clients))
+
+                for client in clients:
+                    try:
+                        await client.send(chunk)
+                    except Exception as e:
+                        self.logger.exception(e)
+                self.logger.debug("Finished sending chunk!")
 
 
     #  async def broadcast(self):

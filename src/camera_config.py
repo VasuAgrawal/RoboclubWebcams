@@ -52,6 +52,7 @@ class CameraConfig(object):
                 "ffmpeg",
                 "-hide_banner",
                 "-loglevel", "warning",
+                "-y",
         ]
 
 

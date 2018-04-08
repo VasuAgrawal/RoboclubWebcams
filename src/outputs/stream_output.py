@@ -24,16 +24,26 @@ class StreamOutput(StreamableOutput):
                 self.config['image_height'])
         ])
 
+        # Make the output fifo's parent directories
         self.output_path = os.sep.join(["fifo", camera_name, output_name])
         subprocess.run(['mkdir', '-p', os.path.dirname(self.output_path)])
+
+        # Make the output fifo itself. First, remove the output if it exists
+        # already, and then create it again as a FIFO.
         try:
-            os.mkfifo(self.output_path)
+            os.unlink(self.output_path) # Remove file if it exists already
+        except Exception as e:
+            self.logger.exception(e) # Basically, just ignore it, but note it.
+
+        try:
+            os.mkfifo(self.output_path) # Create a new one
         except Exception as e:
             # They don't seem to get cleaned up properly usually, so we're just
             # going to ignore errors.
             # TODO: Probably come up with better handling here
-            pass
+            self.logger.exception(e)
 
+        # This doesn't seem to actually work.
         atexit.register(lambda: os.unlink(self.output_path)) # Clean up!
 
         self.args.extend([
