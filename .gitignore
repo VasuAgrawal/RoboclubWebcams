@@ -2,6 +2,7 @@
 logs
 test_data
 server_logs
+fifo
 
 # Vim Swap files
 *.swp

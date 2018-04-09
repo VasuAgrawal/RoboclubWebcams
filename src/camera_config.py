@@ -50,8 +50,9 @@ class CameraConfig(object):
 
         self.ffmpeg_command = [
                 "ffmpeg",
-                "-hide_banner",
-                "-loglevel", "warning",
+                #  "-hide_banner",
+                #  "-loglevel", "warning",
+                "-nostats",
                 "-y",
         ]
 

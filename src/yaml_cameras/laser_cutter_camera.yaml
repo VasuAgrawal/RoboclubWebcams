@@ -1,0 +1,12 @@
+name: laser_cutter_camera
+input:
+    class: RtspInput
+    rtsp_addr: "rtsp://192.168.1.55/11"
+outputs:
+    full_stream:
+        class: StreamOutput
+        hostname: ""
+        ws_port: 4242
+        image_width: 1280
+        image_height: 720
+        chunk_size: 4096

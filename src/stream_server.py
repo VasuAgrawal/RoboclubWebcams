@@ -114,106 +114,33 @@ class StreamServer(object):
             self.clients.remove(client)
 
 
-    #  async def broadcast(self):
-    #      """Broadcast to the clients.
-    #      """
-    #  
-    #      while True:
-    #          try:
-    #              chunk
-    #  
     async def broadcast(self):
+        """Broadcast webcam data to all connected clients.
+
+        This function will spin endlessly trying to grab data from the camera.
+        Camera read exceptions are ignored. Sends that fail to a client will
+        cause the client to be removed from the list of clients.
+        """
 
         while True:
+            # Attempt to read from the chunk
             try:
                 chunk = await self.reader.read(4096)
             except Exception as e:
                 self.logger.exception(e)
-                continue
+                continue # Basically just ignore errors.
 
-            if chunk:
+            if chunk: # Chunk is defined, but may still be None (read nothing)
                 clients = self.clients.copy()
                 self.logger.debug("Sending chunk to %d clients.", len(clients))
 
                 for client in clients:
                     try:
                         await client.send(chunk)
+                    except websockets.exceptions.ConnectionClosed as e:
+                        self.clients.remove(client) # Remove offender
+                        self.logger.info("Closed connection to client (%s, %s)",
+                                client.local_address, client.remote_address)
                     except Exception as e:
+                        self.clients.remove(client) # Remove offender
                         self.logger.exception(e)
-                self.logger.debug("Finished sending chunk!")
-
-
-    #  async def broadcast(self):
-    #      message = "HLLO WORLD?!@?#!?@#"
-    #      while True:
-    #          for client in self.clients.copy():
-    #              try:
-    #                  await client.send(message)
-    #              except Exception as e:
-    #                  self.logger.exception(e)
-    #                  self.clients.remove(client)
-    #  
-    #          self.logger.debug("Broadcaster going to sleep for 1 second!")
-    #          await asyncio.sleep(1)
-
-    
-    # async def reinit_stream(self):
-        # """Reinitialize input camera stream."""
-        # try:
-            # self.camera_process.terminate()
-        # except Exception as e:
-            # # Assume it's terminated and just ignore for now.
-            # self.logger.warning("Unable to terminate camera process. Ignoring. "
-                    # "Error: %s.", e)
-
-        # # Go through all of the clients and reinitialize the magic bytes. Maybe
-        # # this works?
-        # for client in self.clients.copy():
-            # await self.send_magic_bytes(client)
-
-
-        # await self.init_camera()
-
-    
-    # async def send_chunk_to_clients(self, chunk):
-        # self.last_data_received_time = time.time()
-        # for client in self.clients.copy(): # Async-safety or something.
-            # try:
-                # await client.send(chunk)
-            # except (ConnectionError, 
-                    # websockets.exceptions.ConnectionClosed) as e:
-                # self.logger.info("Attempting to send chunk to client, "
-                        # "but an exception occured. Client: %s, "
-                        # "Error: %s", client, e)
-                # self.clients.remove(client)
-
-
-    async def stream(self):
-        while True:
-            # First, read from the camera.
-            try:
-                chunk = await self.camera_process.stdout.read(
-                            self.config['chunk_size'])
-            except Exception as e:
-                # TODO: Determine exactly what kind of errors are happening.
-                self.logger.warning("Exception occured while reading from "
-                        "camera. Will continue to attempt to read, for now. "
-                        "Error: %s", e)
-                continue
-
-            # If a chunk was successfully received, attempt to broadcast it to
-            # all of the clients. Clean up clients which have disconnected.
-            if chunk:
-                await self.send_chunk_to_clients(chunk)
-            else:
-                self.logger.warning("Nothing received from camera. Ignoring "
-                        "this error for now. Hopefully it doesn't persist.")
-                await asyncio.sleep(self.no_data_timeout) 
-
-                # # If we haven't received data in a while, just try to restart.
-                # time_since_data = time.time() - self.last_data_received_time
-                # if time_since_data >= self.no_data_timeout:
-                    # self.logger.warning("No data received for %f seconds. "
-                            # "Restarting the camera process.", time_since_data)
-                    # await self.reinit_stream()
-

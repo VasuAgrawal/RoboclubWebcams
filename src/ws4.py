@@ -19,7 +19,7 @@ to clients using websockets. Cameras can be configured via YAML. Many cameras
 and multiple outputs per camera can be handled by a single process, though it is
 not recommended. FFMPEG is used to stream and transcode.
 
-Python 3.6 is required. It's time.
+Python 3.6 is required.
 """, formatter_class=argparse.RawTextHelpFormatter)
 parser.add_argument(
     '-p', '--processes',
