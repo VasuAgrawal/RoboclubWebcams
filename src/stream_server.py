@@ -1,4 +1,5 @@
 import asyncio
+import fcntl
 import logging
 import os
 import websockets
@@ -12,6 +13,11 @@ class StreamServer(object):
         ]))
 
         self.clients = set()
+       
+        # fcntl constants which aren't provided by default Python?
+        # There *has* to be a better way of doing this
+        self.F_SETPIPE_SZ = 1031
+        self.F_GETPIPE_SZ = 1032
 
 
     async def init(self):
@@ -28,13 +34,24 @@ class StreamServer(object):
         self.logger.info("Opening output pipe %s",
                 self.output_config.get_output_path())
         output_fd = os.open(self.output_config.get_output_path(), 
-                os.O_RDONLY, os.O_NONBLOCK)
+                os.O_RDONLY | os.O_NONBLOCK)
         self.logger.debug("Output FD: %d", output_fd)
+
+        # Change size of the buffer to be bigger, just in case.
+        # Read max-pipe-size, the size that can be set by unprivileged user.
+        self.logger.debug("Modifying pipe maximum size")
+        max_pipe_size = 2**16 #64k
+        with open("/proc/sys/fs/pipe-max-size", 'r') as f:
+            max_pipe_size = int(f.read())
+
+        self.logger.debug("Setting pipe maximum size to %d", max_pipe_size)
+        set_size = fcntl.fcntl(output_fd, self.F_SETPIPE_SZ, max_pipe_size)
+        self.logger.info("Set pipe size to %d", set_size)
 
         reader = asyncio.StreamReader()
         read_protocol = asyncio.StreamReaderProtocol(reader)
         read_transport, _ = await loop.connect_read_pipe(
-                lambda: read_protocol, os.fdopen(output_fd))
+                lambda: read_protocol, os.fdopen(output_fd, mode='rb'))
         self.reader = reader
         self.logger.info("Initialized StreamReader.")
 

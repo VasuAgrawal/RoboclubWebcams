@@ -75,9 +75,14 @@ def assign_cameras_to_processes(filenames, num_processes):
     Returns:
         List of size num_processes containing assignments of filenames.
     """
+
     assignments = [[] for i in range(num_processes)]
     for i, name in enumerate(filenames):
         assignments[i % num_processes].append(name)
+
+    # Trim out unnecessary assignments. Necessary if the number of processes is
+    # higher than the number of filenames provided.
+    assignments = [assign for assign in assignments if len(assign) > 0]
 
     return assignments
 
@@ -137,6 +142,10 @@ def start_camera_processes(assignments):
             args=(assignment, i)
         )
         process.start()
+        # Wait a little bit before starting the next process. Probably not
+        # really necessary, but it makes the logs be slightly more organized.
+        # TODO: Figure out if there's a way to do this with some IPC.
+        time.sleep(0.5) # Sleep 500 ms
         processes.append(process)
 
     return processes
@@ -150,8 +159,8 @@ def main():
     # Split work between specified number of processes.
     filenames = map(lambda x: x.name, args.files)
     assignments = assign_cameras_to_processes(filenames, args.processes)
-    logger.debug("Generated assignments %s to %d processes.", assignments,
-                 args.processes)
+    logger.info("Generated assignments %s to %d processes.", assignments,
+                 len(assignments))
 
     # Start processes based on the assignments.
     processes = start_camera_processes(assignments)

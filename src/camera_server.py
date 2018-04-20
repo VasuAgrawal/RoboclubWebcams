@@ -54,10 +54,11 @@ class CameraServer(object):
         """Spit STDOUT into logs, annotated.
         """
 
-        print(type(self.camera_process.stdout))
         while True:
             line = await self.camera_process.stdout.readline()
-            self.logger.info("STDOUT: %s", line.strip())
+            #  line = line.strip()
+            if line:
+                self.logger.info("STDOUT: %s", line.strip())
 
 
     async def handle_ffmpeg_stderr(self):
@@ -67,10 +68,11 @@ class CameraServer(object):
         measures when things break.
         """
 
-        print(type(self.camera_process.stdout))
         while True:
             line = await self.camera_process.stderr.readline()
-            self.logger.info("STDERR: %s", line.strip())
+            #  line = line.strip()
+            if line:
+                self.logger.info("STDERR: %s", line)
 
 
     async def init_stream_servers(self):

@@ -1,37 +1,70 @@
 <html>
+    <head>
 <!--<script src="https://cdnjs.cloudflare.com/ajax/libs/jsmpeg/0.2/jsmpg.min.js"></script>-->
 <script src="jsmpg.min.js"></script>
 
-<canvas id="cs1"></canvas>
+    </head>
+    <body>
 <script>
-//  var client = new WebSocket('ws://roboclubx.roboclub.org:9999');
-  var client = new WebSocket('ws://localhost:4242');
-  var canvas = document.getElementById('cs1');
-  var player = new jsmpeg(client, {
-    canvas: canvas 
-  });
+elements = [
+    'ws://localhost:4242',
+    'ws://localhost:4243',
+    'ws://localhost:4244',
+    'ws://localhost:4245',
+];
+
+for (i = 0; i < elements.length; i++) {
+    var canvas = document.createElement('canvas');
+    document.body.appendChild(canvas);
+    var client = new WebSocket(elements[i]);
+    var player = new jsmpeg(client, {
+        canvas: canvas
+    });
+    console.log("Created new element?");
+}
 </script>
-
-<canvas id="cs2"></canvas>
-<script>
-//  var client = new WebSocket('ws://roboclubx.roboclub.org:4243');
-  var client = new WebSocket('ws://localhost:4243');
-  var canvas = document.getElementById('cs2');
-  var player = new jsmpeg(client, {
-    canvas: canvas 
-  });
-</script>
-
-<canvas id="cs3"></canvas>
-<script>
-//  var client = new WebSocket('ws://roboclubx.roboclub.org:4243');
-  var client = new WebSocket('ws://localhost:4244');
-  var canvas = document.getElementById('cs3');
-  var player = new jsmpeg(client, {
-    canvas: canvas 
-  });
-</script>
+    </body>
 
 
+<!-- <canvas id="cs1"></canvas> -->
+<!-- <script> -->
+<!-- //  var client = new WebSocket('ws://roboclubx.roboclub.org:9999'); -->
+<!--   var client = new WebSocket('ws://localhost:4242'); -->
+<!--   var canvas = document.getElementById('cs1'); -->
+<!--   var player = new jsmpeg(client, { -->
+<!--     canvas: canvas  -->
+<!--   }); -->
+<!-- </script> -->
+<!--  -->
+<!-- <canvas id="cs2"></canvas> -->
+<!-- <script> -->
+<!-- //  var client = new WebSocket('ws://roboclubx.roboclub.org:4243'); -->
+<!--   var client = new WebSocket('ws://localhost:4243'); -->
+<!--   var canvas = document.getElementById('cs2'); -->
+<!--   var player = new jsmpeg(client, { -->
+<!--     canvas: canvas  -->
+<!--   }); -->
+<!-- </script> -->
+<!--  -->
+<!-- <canvas id="cs3"></canvas> -->
+<!-- <script> -->
+<!-- //  var client = new WebSocket('ws://roboclubx.roboclub.org:4243'); -->
+<!--   var client = new WebSocket('ws://localhost:4244'); -->
+<!--   var canvas = document.getElementById('cs3'); -->
+<!--   var player = new jsmpeg(client, { -->
+<!--     canvas: canvas  -->
+<!--   }); -->
+<!-- </script> -->
+<!--  -->
+<!-- <canvas id="cs4"></canvas> -->
+<!-- <script> -->
+<!-- //  var client = new WebSocket('ws://roboclubx.roboclub.org:4243'); -->
+<!--   var client = new WebSocket('ws://localhost:4245'); -->
+<!--   var canvas = document.getElementById('cs4'); -->
+<!--   var player = new jsmpeg(client, { -->
+<!--     canvas: canvas  -->
+<!--   }); -->
+<!-- </script> -->
+<!--  -->
 
 </html>
