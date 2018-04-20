@@ -1,0 +1,8 @@
+name: laptop_webcam
+input:
+    class: WebcamInput
+    port: /dev/video0
+outputs: 
+    logging:
+        class: FileOutput
+        log_dir: "../video_outputs"

@@ -24,3 +24,6 @@ outputs:
         image_width: 1280
         image_height: 720
         chunk_size: 8192 # bytes
+    full_logging:
+        class: FileOutput
+        log_dir: "../video_outputs"
