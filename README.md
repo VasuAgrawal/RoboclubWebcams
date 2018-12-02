@@ -1,7 +1,11 @@
-**TODO**:
+Dependencies:
 
-* Convert to XML
-* Add support for webcam groups
-* Add support for multiple output streams (crops?)
-* Switch to named pipes for streams
-* Log to file rather than console (both?)
+* Python 3.6
+* reasonably new version of FFMPEG
+* PyYAML
+
+Running:
+
+`python3.6 ws4.py [camera name.yaml]`
+
+Use `python3.6 ws4.py --help` for more details.
